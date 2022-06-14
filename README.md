@@ -1,5 +1,7 @@
 # REAL TIME HUMAN DETECTION
 
-- This is a Computer Vision Project, with these model we can detect nuber of persons ata a specific place at that instant.
-- The model can either take live feed from any camera or it can be video file.
+- In this project the model with the input either as a live feed from any camera or a video file ,can detect the number of people at that instant as shown in the below video
+
+
+https://user-images.githubusercontent.com/82393353/173562045-5b2c7d60-2f85-455c-b982-b21e5e945864.mp4
 
