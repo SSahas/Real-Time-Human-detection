@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import streamlit as st
 import tempfile
-from streamlit_webrtc import webrtc_streamer
+#from streamlit_webrtc import webrtc_streamer
 
 NMS_THRESHOLD = 0.3
 MIN_CONFIDENCE = 0.2
@@ -72,18 +72,46 @@ def pedestrian_detection(image, model, layer_name, personidz=0):
 
 
 model = cv2.dnn.readNetFromDarknet(config_path, weights_path)
+
 layer_name = model.getLayerNames()
 layer_name = [layer_name[i - 1] for i in model.getUnconnectedOutLayers()]
+
+st.title("Human detection with YOLOV4")
+#st.subheader("Choose appropriate test")
+
+method = st.selectbox('Choose the method', [
+                      'NONE', 'CAMERA', 'VIDEO FILE'], index=0)
+# if st.button("CAMERA"):
+#   method = "CAMERA"
+# elif st.button("VIDEO FILE"):
+#    method = "VIDEO FILE"
+
 try:
-    st.title("Human detection with YOLOV4")
-    st.subheader("Choose appropriate Method")
-
-    method = st.selectbox('Choose the method', [
-                          'CAMERA', 'VIDEO FILE'], index=0)
-
     if method == 'CAMERA':
-        #cap = cv2.VideoCapture(0)
-        webrtc_streamer(key="key")
+        #frame_window = st.image([])
+        ca = cv2.VideoCapture(0)
+        # webrtc_streamer(key="key")
+        while True:
+            ret, frame = ca.read()
+            #frame = cv2.COLOR_BGR2RGB
+            input_video_frame_height, input_video_frame_width = frame.shape[:2]
+            target_frame_height = int(input_video_frame_height * SCALE_OUTPUT)
+            target_frame_width = int(input_video_frame_width * SCALE_OUTPUT)
+            resize_image = cv2.resize(src=frame, dsize=(
+                target_frame_width, target_frame_height))
+            results = pedestrian_detection(resize_image, model, layer_name,
+                                           personidz=LABELS.index("person"))
+            for res in results:
+                cv2.rectangle(resize_image, (res[1][0], res[1][1]),
+                              (res[1][2], res[1][3]), (0, 255, 0), 2)
+            cv2.putText(resize_image, f'Total Persons = {len(results)}',
+                        (30, 50), cv2.FONT_HERSHEY_DUPLEX, 1.2, (0, 255, 0), 3)
+            #stacked_frame = np.array(resize_image)
+
+            # frame_window.image(resize_image)
+            stframe.image(resize_image, channels='BGR', use_column_width=True)
+        else:
+            st.write('Stopped')
     elif method == 'VIDEO FILE':
         video_file_buffer = st.file_uploader(
             "Upload a video", type=["mp4", "mov", 'avi', 'asf', 'm4v'])
@@ -114,7 +142,7 @@ try:
                 for res in results:
                     cv2.rectangle(resize_image, (res[1][0], res[1][1]),
                                   (res[1][2], res[1][3]), (0, 255, 0), 2)
-                cv2.putText(resize_image, f'Total Persons = {len(results) - 1}',
+                cv2.putText(resize_image, f'Total Persons = {len(results)}',
                             (80, 80), cv2.FONT_HERSHEY_DUPLEX, 2.5, (0, 255, 0), 4)
 
                 #stacked_frame = np.vstack((resize_image, image))
