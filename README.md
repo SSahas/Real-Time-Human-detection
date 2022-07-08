@@ -4,6 +4,15 @@
 - This is an end to end project , python's Streamlit framework is used.
 - The model works with YOLOV4 api.
 
+## The first Page 
+
+
+![Screenshot (50)](https://user-images.githubusercontent.com/82393353/177955567-0fb39eac-d73b-4285-9510-076318f82e35.png)
+
+- Select the method you wanted.
+
+- > Down below , the sample output of a video file.
+
 https://user-images.githubusercontent.com/82393353/173562045-5b2c7d60-2f85-455c-b982-b21e5e945864.mp4
 
 ## Imporovemnts 
