@@ -20,7 +20,7 @@ stframe = st.empty()
 SCALE_OUTPUT = 1
 
 
-def pedestrian_detection(image, model, layer_name, personidz=0):
+def detect_humans(image, model, layer_name, personidz=0):
 
     (H, W) = image.shape[:2]
     results = []
@@ -93,7 +93,7 @@ try:
             target_frame_width = int(input_video_frame_width * SCALE_OUTPUT)
             resize_image = cv2.resize(src=frame, dsize=(
                 target_frame_width, target_frame_height))
-            results = pedestrian_detection(resize_image, model, layer_name,
+            results = detect_humans(resize_image, model, layer_name,
                                            personidz=LABELS.index("person"))
             for res in results:
                 cv2.rectangle(resize_image, (res[1][0], res[1][1]),
@@ -129,7 +129,7 @@ try:
                 resize_image = cv2.resize(src=image, dsize=(
                     target_frame_width, target_frame_height))
                 
-                results = pedestrian_detection(resize_image, model, layer_name,
+                results = detect_humans(resize_image, model, layer_name,
                                                personidz=LABELS.index("person"))
                 
                 for res in results:
