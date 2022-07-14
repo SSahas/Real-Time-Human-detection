@@ -80,78 +80,77 @@ method = st.selectbox('Choose the method', [
                       'NONE', 'CAMERA', 'VIDEO FILE'], index=0)
 
 
-try:
-    if method == 'CAMERA':
-        
-        ca = cv2.VideoCapture(0)
-        
-        while True:
-            ret, frame = ca.read()
-            
-            input_video_frame_height, input_video_frame_width = frame.shape[:2]
-            target_frame_height = int(input_video_frame_height * SCALE_OUTPUT)
-            target_frame_width = int(input_video_frame_width * SCALE_OUTPUT)
-            resize_image = cv2.resize(src=frame, dsize=(
+
+if method == 'CAMERA':
+
+    ca = cv2.VideoCapture(0)
+
+    while True:
+        ret, frame = ca.read()
+
+        input_video_frame_height, input_video_frame_width = frame.shape[:2]
+        target_frame_height = int(input_video_frame_height * SCALE_OUTPUT)
+        target_frame_width = int(input_video_frame_width * SCALE_OUTPUT)
+        resize_image = cv2.resize(src=frame, dsize=(
+            target_frame_width, target_frame_height))
+        results = detect_humans(resize_image, model, layer_name,
+                                       personidz=LABELS.index("person"))
+        for res in results:
+            cv2.rectangle(resize_image, (res[1][0], res[1][1]),
+                          (res[1][2], res[1][3]), (0, 255, 0), 2)
+        cv2.putText(resize_image, f'Total Persons = {len(results)}',
+                    (30, 50), cv2.FONT_HERSHEY_DUPLEX, 1.2, (0, 255, 0), 3)
+
+
+        stframe.image(resize_image, channels='BGR', use_column_width=True)
+    else:
+        st.write('Stopped')
+elif method == 'VIDEO FILE':
+    video_file_buffer = st.file_uploader(
+        "Upload a video", type=["mp4", "mov", 'avi', 'asf', 'm4v'])
+    if video_file_buffer is not None:
+
+        tffile = tempfile.NamedTemporaryFile(delete=False)
+        tffile.write(video_file_buffer.read())
+        cap = cv2.VideoCapture(tffile.name)
+
+        while cap.isOpened():
+            grabbed, image = cap.read()
+            input_video_frame_height, input_video_frame_width = image.shape[:2]
+            target_frame_height = int(
+                input_video_frame_height * SCALE_OUTPUT)
+            target_frame_width = int(
+                input_video_frame_width * SCALE_OUTPUT)
+
+            if not grabbed:
+                cap.release()
+                break
+
+            resize_image = cv2.resize(src=image, dsize=(
                 target_frame_width, target_frame_height))
+
             results = detect_humans(resize_image, model, layer_name,
                                            personidz=LABELS.index("person"))
+
             for res in results:
                 cv2.rectangle(resize_image, (res[1][0], res[1][1]),
                               (res[1][2], res[1][3]), (0, 255, 0), 2)
             cv2.putText(resize_image, f'Total Persons = {len(results)}',
-                        (30, 50), cv2.FONT_HERSHEY_DUPLEX, 1.2, (0, 255, 0), 3)
-            
-            
-            stframe.image(resize_image, channels='BGR', use_column_width=True)
-        else:
-            st.write('Stopped')
-    elif method == 'VIDEO FILE':
-        video_file_buffer = st.file_uploader(
-            "Upload a video", type=["mp4", "mov", 'avi', 'asf', 'm4v'])
-        if video_file_buffer is not None:
+                        (80, 80), cv2.FONT_HERSHEY_DUPLEX, 2.5, (0, 255, 0), 4)
 
-            tffile = tempfile.NamedTemporaryFile(delete=False)
-            tffile.write(video_file_buffer.read())
-            cap = cv2.VideoCapture(tffile.name)
 
-            while cap.isOpened():
-                grabbed, image = cap.read()
-                input_video_frame_height, input_video_frame_width = image.shape[:2]
-                target_frame_height = int(
-                    input_video_frame_height * SCALE_OUTPUT)
-                target_frame_width = int(
-                    input_video_frame_width * SCALE_OUTPUT)
+            stacked_frame = np.array(resize_image)
 
-                if not grabbed:
-                    cap.release()
-                    break
-                
-                resize_image = cv2.resize(src=image, dsize=(
-                    target_frame_width, target_frame_height))
-                
-                results = detect_humans(resize_image, model, layer_name,
-                                               personidz=LABELS.index("person"))
-                
-                for res in results:
-                    cv2.rectangle(resize_image, (res[1][0], res[1][1]),
-                                  (res[1][2], res[1][3]), (0, 255, 0), 2)
-                cv2.putText(resize_image, f'Total Persons = {len(results)}',
-                            (80, 80), cv2.FONT_HERSHEY_DUPLEX, 2.5, (0, 255, 0), 4)
+            stframe.image(stacked_frame, channels='BGR',
+                          use_column_width=True)
 
-                
-                stacked_frame = np.array(resize_image)
-                
-                stframe.image(stacked_frame, channels='BGR',
-                              use_column_width=True)
+            key = cv2.waitKey(0)
+            if key == 27:
+                break
 
-                key = cv2.waitKey(0)
-                if key == 27:
-                    break
+        cap.release()
 
-            cap.release()
-            
-            cv2.destroyAllWindows()
-            
-            st.stop()
-except AttributeError:
-    pass
+        cv2.destroyAllWindows()
+
+        st.stop()
+
