@@ -36,11 +36,3 @@ https://user-images.githubusercontent.com/82393353/173562045-5b2c7d60-2f85-455c-
 
 
 
-## Deployment 
-```diff
-- Deployed this project on HuggingFace Platform and can be accessed by any one with the link given below , 
-- but unfortunately this project needs considerable computation power, this is  running on the free plan of 
-- huggingFace platform, the camera won't even open and the detection for video files is very very slow,
-- but still if you wanna take a look, use the link below, but it works fine when i run it locally on my pc.
-```
-- link - https://huggingface.co/spaces/SSahas/Pedestrian_detection
