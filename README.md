@@ -2,7 +2,7 @@
 
 - In this project the model with the input either as a live feed from any camera or a video file ,can detect the number of people at that instant as shown in the below video
 - This is an end to end project , python's Streamlit framework is used.
-- The model works with YOLOV4 Model.
+- The works with YOLOV4 Model.
 
 ## The first Page 
 
